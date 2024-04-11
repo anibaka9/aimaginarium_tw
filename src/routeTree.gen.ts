@@ -16,10 +16,17 @@ import { Route as rootRoute } from './routes/__root'
 
 // Create Virtual Routes
 
+const JoinLazyImport = createFileRoute('/join')()
 const CreateLazyImport = createFileRoute('/create')()
 const IndexLazyImport = createFileRoute('/')()
+const RoomRoomIdLazyImport = createFileRoute('/room/$roomId')()
 
 // Create/Update Routes
+
+const JoinLazyRoute = JoinLazyImport.update({
+  path: '/join',
+  getParentRoute: () => rootRoute,
+} as any).lazy(() => import('./routes/join.lazy').then((d) => d.Route))
 
 const CreateLazyRoute = CreateLazyImport.update({
   path: '/create',
@@ -30,6 +37,11 @@ const IndexLazyRoute = IndexLazyImport.update({
   path: '/',
   getParentRoute: () => rootRoute,
 } as any).lazy(() => import('./routes/index.lazy').then((d) => d.Route))
+
+const RoomRoomIdLazyRoute = RoomRoomIdLazyImport.update({
+  path: '/room/$roomId',
+  getParentRoute: () => rootRoute,
+} as any).lazy(() => import('./routes/room/$roomId.lazy').then((d) => d.Route))
 
 // Populate the FileRoutesByPath interface
 
@@ -43,6 +55,14 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CreateLazyImport
       parentRoute: typeof rootRoute
     }
+    '/join': {
+      preLoaderRoute: typeof JoinLazyImport
+      parentRoute: typeof rootRoute
+    }
+    '/room/$roomId': {
+      preLoaderRoute: typeof RoomRoomIdLazyImport
+      parentRoute: typeof rootRoute
+    }
   }
 }
 
@@ -51,6 +71,8 @@ declare module '@tanstack/react-router' {
 export const routeTree = rootRoute.addChildren([
   IndexLazyRoute,
   CreateLazyRoute,
+  JoinLazyRoute,
+  RoomRoomIdLazyRoute,
 ])
 
 /* prettier-ignore-end */

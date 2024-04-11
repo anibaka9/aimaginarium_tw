@@ -10,11 +10,11 @@ export function Forms() {
   return (
     <div className="relative w-full h-screen flex items-center justify-center">
       <div className="flex space-x-4">
-        <Button asChild className="bg-white text-blue-600 hover:bg-blue-100">
-          <Link to="create">Создать комнату</Link>
+        <Button asChild>
+          <Link to="/create">Create Room</Link>
         </Button>
-        <Button asChild className="bg-white text-blue-600 hover:bg-blue-100">
-          <Link> Присоединиться</Link>
+        <Button asChild>
+          <Link to="/join">Join Room</Link>
         </Button>
       </div>
     </div>
