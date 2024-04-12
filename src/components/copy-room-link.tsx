@@ -6,6 +6,7 @@ export function CopyRoomLink({ roomId }: { roomId: string }) {
   return (
     <Button
       size="sm"
+      variant="outline"
       onClick={() => {
         navigator.clipboard.writeText(
           window.location.origin + "/room/" + roomId,

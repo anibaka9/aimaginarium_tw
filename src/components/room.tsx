@@ -6,6 +6,7 @@ import { useCollection, useDocument } from "react-firebase-hooks/firestore";
 import { Lobby } from "./lobby";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { JoinCreatedRoom } from "./join-created-room";
+import { Game } from "./Game";
 
 function Room() {
   const { roomId } = Route.useParams();
@@ -41,7 +42,7 @@ function Room() {
     case "lobby":
       return <Lobby />;
     case "game":
-      return <div>Game</div>;
+      return <Game />;
     default:
       return <div>Unknown</div>;
   }

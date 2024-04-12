@@ -39,9 +39,17 @@ export function Lobby() {
   const isHost = room?.host === user?.uid;
 
   const startGame = async () => {
-    await setDoc(doc(db, "rooms", roomId), {
-      stage: "game",
-    });
+    if (players) {
+      const randomIndex = Math.floor(Math.random() * players.length);
+      const randomPlayer = players[randomIndex];
+
+      console.log(randomPlayer);
+      await setDoc(doc(db, "rooms", roomId), {
+        stage: "game",
+        moveStage: "association",
+        activePlayerNick: randomPlayer?.nickname,
+      });
+    }
   };
 
   if (!players || !room) {
