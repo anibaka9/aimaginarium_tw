@@ -7,13 +7,7 @@ import { auth, db } from "@/firebase-config";
 import { doc, setDoc } from "firebase/firestore";
 import { SubmitHandler, useForm } from "react-hook-form";
 
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { signInAnonymously } from "firebase/auth";
 import { Button } from "./ui/button";
