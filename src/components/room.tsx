@@ -5,6 +5,7 @@ import { collection, doc } from "firebase/firestore";
 import { useCollection, useDocument } from "react-firebase-hooks/firestore";
 import { Lobby } from "./lobby";
 import { useAuthState } from "react-firebase-hooks/auth";
+import { JoinCreatedRoom } from "./join-created-room";
 
 function Room() {
   const { roomId } = Route.useParams();
@@ -28,8 +29,13 @@ function Room() {
   if (loading || error) {
     return <div>Loading1</div>;
   }
+
   if (!isPlayerLoggedIn) {
-    return <>not logged in</>;
+    if (stage === "lobby") {
+      return <JoinCreatedRoom />;
+    } else {
+      return <>game already started</>;
+    }
   }
   switch (stage) {
     case "lobby":

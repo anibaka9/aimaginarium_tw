@@ -14,10 +14,11 @@ import { Button } from "@/components/ui/button";
 import { Avatar } from "@/components/ui/avatar";
 import { Route } from "@/routes/room/$roomId.lazy";
 import { useCollection, useDocument } from "react-firebase-hooks/firestore";
-import { collection, doc } from "firebase/firestore";
+import { collection, doc, setDoc } from "firebase/firestore";
 import { auth, db } from "@/firebase-config";
 import { playerType, roomType } from "@/types";
 import { useAuthState } from "react-firebase-hooks/auth";
+import { CopyRoomLink } from "./copy-room-link";
 
 export function Lobby() {
   const [user] = useAuthState(auth);
@@ -35,6 +36,14 @@ export function Lobby() {
 
   console.log(players);
 
+  const isHost = room?.host === user?.uid;
+
+  const startGame = async () => {
+    await setDoc(doc(db, "rooms", roomId), {
+      stage: "game",
+    });
+  };
+
   if (!players || !room) {
     return <div>Loading2</div>;
   }
@@ -45,7 +54,7 @@ export function Lobby() {
         <CardHeader>
           <CardTitle className="text-2xl">🎨 Room name: {roomId}</CardTitle>
           <div>
-            <Button size="sm">Copy invite link</Button>
+            <CopyRoomLink roomId={roomId} />
           </div>
         </CardHeader>
         <CardContent className="p-0">
@@ -72,9 +81,13 @@ export function Lobby() {
             </ul>
           </div>
         </CardContent>
-        <CardFooter>
-          <Button className="w-full">Start game</Button>
-        </CardFooter>
+        {isHost && (
+          <CardFooter>
+            <Button className="w-full" onClick={startGame}>
+              Start game
+            </Button>
+          </CardFooter>
+        )}
       </Card>
     </div>
   );

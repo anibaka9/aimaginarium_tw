@@ -64,9 +64,9 @@ export function JoinRoom() {
       <form onSubmit={handleSubmit(onSubmit)}>
         <Card className="w-full max-w-lg">
           <CardHeader>
-            <CardTitle className="text-2xl">Create a Game Room</CardTitle>
+            <CardTitle className="text-2xl">Join a Game Room</CardTitle>
             <CardDescription>
-              Enter your nickname to create a game room
+              Enter your nickname to join a game room
             </CardDescription>
           </CardHeader>
 
