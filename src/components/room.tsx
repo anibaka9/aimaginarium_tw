@@ -23,8 +23,6 @@ function Room() {
     id: doc.id,
   }));
 
-  console.log(players);
-
   const isPlayerLoggedIn = players?.some((player) => player.id === user?.uid);
 
   if (loading || error) {

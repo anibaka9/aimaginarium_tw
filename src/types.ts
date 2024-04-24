@@ -6,7 +6,9 @@ export type roomType = {
   stage: gameStage;
   host: string;
   moveStage?: moveStage;
-  activePlayerNick?: string;
+  activePlayer?: string;
+  selectedForAssociation?: string;
+  association?: string;
 };
 
 export type playerType = {

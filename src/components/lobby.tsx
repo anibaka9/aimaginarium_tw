@@ -44,8 +44,6 @@ export function Lobby() {
   const [roomValue] = useDocument(doc(db, "rooms", roomId));
   const room = roomValue?.data() as roomType;
 
-  console.log(players);
-
   const isHost = room?.host === user?.uid;
 
   if (!players || !room) {
@@ -53,7 +51,6 @@ export function Lobby() {
   }
 
   const onSubmit = async () => {
-    console.log("players", players);
     if (players) {
       await startGame(roomId, players);
     }

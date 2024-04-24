@@ -5,15 +5,75 @@
  */
 import { Input } from "@/components/ui/input";
 import { CardsGrid } from "./cards-grid";
+import { Button } from "@/components/ui/button";
+import { SubmitHandler, useForm } from "react-hook-form";
+import { useDocument } from "react-firebase-hooks/firestore";
+import { db } from "@/firebase/firebase-config";
+import { roomType } from "@/types";
+import { doc, setDoc } from "firebase/firestore";
+import { Route } from "@/routes/room/$roomId.lazy";
+import selectCard from "@/firebase/actions/select-card-for-association";
+import selectCardForAssociation from "@/firebase/actions/select-card-for-association";
+
+type Inputs = {
+  association: string;
+};
 
 export function Association() {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<Inputs>();
+
+  const { roomId } = Route.useParams();
+
+  const [roomValue] = useDocument(doc(db, "rooms", roomId));
+
+  const room = roomValue?.data() as roomType | undefined;
+  const { selectedForAssociation } = room || {};
+
+  const onSubmit: SubmitHandler<Inputs> = async (data) => {
+    await setDoc(
+      doc(db, "rooms", roomId),
+      {
+        association: data.association,
+        moveStage: "selecting",
+      },
+      { merge: true },
+    );
+  };
+
+  const onCardClick = (cardId: string) => {
+    selectCardForAssociation(cardId, roomId);
+  };
+
   return (
     <div>
       <div className="flex flex-col items-center gap-4 p-4">
-        <CardsGrid />
-        <div className="w-full max-w-sm">
-          <Input placeholder="Ваша ассоциация..." type="text" />
-        </div>
+        <CardsGrid
+          selectedCardId={selectedForAssociation}
+          onCardClick={onCardClick}
+        />
+        <form
+          className="w-full flex max-w-md gap-4"
+          onSubmit={handleSubmit(onSubmit)}
+          aria-disabled={!selectedForAssociation}
+        >
+          <div className="flex-1">
+            <Input
+              placeholder="Ваша ассоциация..."
+              type="text"
+              {...register("association", { required: true })}
+            />
+            {errors.association && (
+              <p className="text-xs text-red-500 dark:text-red-400">
+                This field is required.
+              </p>
+            )}
+          </div>
+          <Button type="submit">Submit</Button>
+        </form>
       </div>
     </div>
   );
