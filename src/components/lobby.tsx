@@ -14,18 +14,28 @@ import { Button } from "@/components/ui/button";
 import { Avatar } from "@/components/ui/avatar";
 import { Route } from "@/routes/room/$roomId.lazy";
 import { useCollection, useDocument } from "react-firebase-hooks/firestore";
-import { collection, doc, setDoc } from "firebase/firestore";
-import { auth, db } from "@/firebase-config";
+import {
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  limit,
+  query,
+  setDoc,
+  writeBatch,
+} from "firebase/firestore";
+import { auth, db } from "@/firebase/firebase-config";
 import { playerType, roomType } from "@/types";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { CopyRoomLink } from "./copy-room-link";
+import { startGame } from "@/firebase/actions/start-game";
 
 export function Lobby() {
   const [user] = useAuthState(auth);
 
   const { roomId } = Route.useParams();
   const [playersValue] = useCollection(
-    collection(db, "rooms", roomId, "users"),
+    collection(db, "rooms", roomId, "players"),
   );
   const players = playersValue?.docs.map((doc) => ({
     ...(doc.data() as playerType),
@@ -38,23 +48,16 @@ export function Lobby() {
 
   const isHost = room?.host === user?.uid;
 
-  const startGame = async () => {
-    if (players) {
-      const randomIndex = Math.floor(Math.random() * players.length);
-      const randomPlayer = players[randomIndex];
-
-      console.log(randomPlayer);
-      await setDoc(doc(db, "rooms", roomId), {
-        stage: "game",
-        moveStage: "association",
-        activePlayerNick: randomPlayer?.nickname,
-      });
-    }
-  };
-
   if (!players || !room) {
     return <div>Loading2</div>;
   }
+
+  const onSubmit = async () => {
+    console.log("players", players);
+    if (players) {
+      await startGame(roomId, players);
+    }
+  };
 
   return (
     <div className="flex h-screen items-center justify-center">
@@ -91,7 +94,7 @@ export function Lobby() {
         </CardContent>
         {isHost && (
           <CardFooter>
-            <Button className="w-full" onClick={startGame}>
+            <Button className="w-full" onClick={onSubmit}>
               Start game
             </Button>
           </CardFooter>

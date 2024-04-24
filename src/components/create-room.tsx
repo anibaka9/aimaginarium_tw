@@ -3,11 +3,8 @@
  * @see https://v0.dev/t/uLSJCc9AcbM
  * Documentation: https://v0.dev/docs#integrating-generated-code-into-your-nextjs-app
  */
-import { auth, db } from "@/firebase-config";
 import { useNavigate } from "@tanstack/react-router";
-import { doc, setDoc } from "firebase/firestore";
 import { SubmitHandler, useForm } from "react-hook-form";
-import ShortUniqueId from "short-unique-id";
 
 import {
   Card,
@@ -17,14 +14,9 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { roomType } from "@/types";
-import { signInAnonymously } from "firebase/auth";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
-
-const alphabet = [...Array(26)].map((_, i) => String.fromCharCode(i + 65));
-
-const idGenerator = new ShortUniqueId({ length: 4, dictionary: alphabet });
+import { createRoom } from "@/firebase/actions/create-room";
 
 type Inputs = {
   nickname: string;
@@ -40,21 +32,7 @@ export function CreateRoom() {
   const navigate = useNavigate();
 
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
-    const {
-      user: { uid },
-    } = await signInAnonymously(auth);
-    const roomId = idGenerator.rnd();
-    const roomData: roomType = {
-      createdAt: new Date(),
-      stage: "lobby",
-      host: uid,
-    };
-    await setDoc(doc(db, "rooms", roomId), roomData);
-    await setDoc(doc(db, "rooms", roomId, "users", uid), {
-      user: uid,
-      nickname: data.nickname,
-      host: true,
-    });
+    const roomId = await createRoom(data.nickname);
     navigate({ to: `/room/$roomId`, params: { roomId } });
   };
 

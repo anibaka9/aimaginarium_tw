@@ -3,7 +3,7 @@
  * @see https://v0.dev/t/uLSJCc9AcbM
  * Documentation: https://v0.dev/docs#integrating-generated-code-into-your-nextjs-app
  */
-import { auth, db } from "@/firebase-config";
+import { auth, db } from "@/firebase/firebase-config";
 import { doc, setDoc } from "firebase/firestore";
 import { SubmitHandler, useForm } from "react-hook-form";
 
@@ -32,7 +32,7 @@ export function JoinCreatedRoom() {
     const {
       user: { uid },
     } = await signInAnonymously(auth);
-    await setDoc(doc(db, "rooms", roomId, "users", uid), {
+    await setDoc(doc(db, "rooms", roomId, "players", uid), {
       user: uid,
       nickname: data.nickname,
     });
@@ -40,15 +40,14 @@ export function JoinCreatedRoom() {
 
   return (
     <div className="flex h-screen items-center justify-center">
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <Card className="w-full max-w-lg">
-          <CardHeader>
-            <CardTitle className="text-2xl">🎨 Room name: {roomId}</CardTitle>
-            <div>
-              <CopyRoomLink roomId={roomId} />
-            </div>
-          </CardHeader>
-
+      <Card className="w-full max-w-lg">
+        <CardHeader>
+          <CardTitle className="text-2xl">🎨 Room name: {roomId}</CardTitle>
+          <div>
+            <CopyRoomLink roomId={roomId} />
+          </div>
+        </CardHeader>
+        <form onSubmit={handleSubmit(onSubmit)}>
           <CardContent className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="nickname">Nickname</Label>
@@ -66,8 +65,8 @@ export function JoinCreatedRoom() {
             </div>
             <Button className="w-full">Join</Button>
           </CardContent>
-        </Card>
-      </form>
+        </form>
+      </Card>
     </div>
   );
 }

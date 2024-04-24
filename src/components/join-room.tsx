@@ -4,7 +4,7 @@
  * Documentation: https://v0.dev/docs#integrating-generated-code-into-your-nextjs-app
  */
 
-import { auth, db } from "@/firebase-config";
+import { auth, db } from "@/firebase/firebase-config";
 import { useNavigate } from "@tanstack/react-router";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { SubmitHandler, useForm } from "react-hook-form";
@@ -47,7 +47,7 @@ export function JoinRoom() {
     const roomSnap = await getDoc(roomRef);
 
     if (roomSnap.exists()) {
-      await setDoc(doc(db, "rooms", roomId, "users", uid), {
+      await setDoc(doc(db, "rooms", roomId, "players", uid), {
         user: uid,
         nickname: nickname,
       });

@@ -10,7 +10,14 @@ export type roomType = {
 };
 
 export type playerType = {
-  user: string;
   nickname: string;
   host: boolean;
+};
+
+export type playerWithIdType = playerType & { id: string };
+
+export type CardType = {
+  imageName: string;
+  imageUrl?: string;
+  id: string;
 };

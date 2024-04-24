@@ -1,4 +1,4 @@
-import { auth, db } from "@/firebase-config";
+import { auth, db } from "@/firebase/firebase-config";
 import { Route } from "@/routes/room/$roomId.lazy";
 import { playerType, roomType } from "@/types";
 import { collection, doc } from "firebase/firestore";
@@ -11,7 +11,7 @@ export function Game() {
   const [user] = useAuthState(auth);
 
   const [playersValue] = useCollection(
-    collection(db, "rooms", roomId, "users"),
+    collection(db, "rooms", roomId, "players"),
   );
   const players = playersValue?.docs.map((doc) => ({
     ...(doc.data() as playerType),
