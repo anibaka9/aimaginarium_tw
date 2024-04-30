@@ -16,7 +16,6 @@ export function Forms() {
         <Button asChild>
           <Link to="/join">Join Room</Link>
         </Button>
-        <button onClick={() => methodDoesNotExist()}>Break the world</button>;
       </div>
     </div>
   );
