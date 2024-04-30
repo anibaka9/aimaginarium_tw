@@ -8,6 +8,8 @@ import { Analytics } from "@vercel/analytics/react";
 // Import the generated route tree
 import { routeTree } from "./routeTree.gen";
 import { SpeedInsights } from "@vercel/speed-insights/react";
+import { initSentry } from "./sentry";
+initSentry();
 
 // Create a new router instance
 const router = createRouter({ routeTree });
