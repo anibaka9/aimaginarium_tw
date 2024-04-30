@@ -4,11 +4,10 @@
  * Documentation: https://v0.dev/docs#integrating-generated-code-into-your-nextjs-app
  */
 import { CardsGrid } from "./cards-grid";
-import { SubmitHandler } from "react-hook-form";
 import { useDocument } from "react-firebase-hooks/firestore";
 import { auth, db } from "@/firebase/firebase-config";
-import { playerType, roomType } from "@/types";
-import { doc, setDoc } from "firebase/firestore";
+import { roomType } from "@/types";
+import { doc } from "firebase/firestore";
 import { Route } from "@/routes/room/$roomId.lazy";
 import { useAuthState } from "react-firebase-hooks/auth";
 import selectCard from "@/firebase/actions/select-card";
@@ -35,8 +34,8 @@ export function SelectingCard() {
       | undefined) || {};
   undefined;
 
-  function onCardClick(cardId: string) {
-    selectCard(cardId, roomId, user?.uid || "");
+  function onCardClick(cardId: string, fileName: string) {
+    selectCard(cardId, fileName, roomId, user?.uid || "");
   }
 
   return (

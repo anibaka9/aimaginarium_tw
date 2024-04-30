@@ -7,11 +7,18 @@ import { cn } from "@/lib/utils";
 type CardProps = {
   id: string;
   fileName: string;
-  onCardClick?: (id: string) => void;
+  onCardClick?: (id: string, fileName: string) => void;
   selected?: boolean;
+  blocked?: boolean;
 };
 
-export function ImageCard({ id, fileName, onCardClick, selected }: CardProps) {
+export function ImageCard({
+  id,
+  fileName,
+  onCardClick,
+  selected,
+  blocked,
+}: CardProps) {
   const [downloadUrl, loading] = useDownloadURL(
     storageRef(storage, "cards/" + fileName),
   );
@@ -19,10 +26,12 @@ export function ImageCard({ id, fileName, onCardClick, selected }: CardProps) {
   return (
     <Card
       className={cn(
-        "max-w-[300px] aspect-card overflow-hidden hover:border-blue-500 hover:border-2  hover:shadow-lg cursor-pointer",
+        "max-w-[300px] aspect-card overflow-hidden ",
         selected && "border-2 border-red-500",
+        !blocked &&
+          "hover:border-blue-500 hover:border-2  hover:shadow-lg cursor-pointer",
       )}
-      onClick={() => onCardClick && onCardClick(id)}
+      onClick={() => onCardClick && onCardClick(id, fileName)}
     >
       {loading ? (
         "loading"

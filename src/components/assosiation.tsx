@@ -8,12 +8,11 @@ import { CardsGrid } from "./cards-grid";
 import { Button } from "@/components/ui/button";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { useDocument } from "react-firebase-hooks/firestore";
-import { db } from "@/firebase/firebase-config";
-import { roomType } from "@/types";
+import { auth, db } from "@/firebase/firebase-config";
 import { doc, setDoc } from "firebase/firestore";
 import { Route } from "@/routes/room/$roomId.lazy";
-import selectCard from "@/firebase/actions/select-card-for-association";
-import selectCardForAssociation from "@/firebase/actions/select-card-for-association";
+import selectCard from "@/firebase/actions/select-card";
+import { useAuthState } from "react-firebase-hooks/auth";
 
 type Inputs = {
   association: string;
@@ -27,11 +26,19 @@ export function Association() {
   } = useForm<Inputs>();
 
   const { roomId } = Route.useParams();
+  const [user] = useAuthState(auth);
 
-  const [roomValue] = useDocument(doc(db, "rooms", roomId));
+  const [selectedCardValue] = useDocument(
+    doc(db, "rooms", roomId, "selectedCards", user?.uid || ""),
+  );
 
-  const room = roomValue?.data() as roomType | undefined;
-  const { selectedForAssociation } = room || {};
+  const { selectedCardId } =
+    (selectedCardValue?.data() as
+      | {
+          selectedCardId: string;
+        }
+      | undefined) || {};
+  undefined;
 
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
     await setDoc(
@@ -44,21 +51,18 @@ export function Association() {
     );
   };
 
-  const onCardClick = (cardId: string) => {
-    selectCardForAssociation(cardId, roomId);
+  const onCardClick = (cardId: string, fileName: string) => {
+    selectCard(cardId, fileName, roomId, user?.uid || "", true);
   };
 
   return (
     <div>
       <div className="flex flex-col items-center gap-4 p-4">
-        <CardsGrid
-          selectedCardId={selectedForAssociation}
-          onCardClick={onCardClick}
-        />
+        <CardsGrid selectedCardId={selectedCardId} onCardClick={onCardClick} />
         <form
           className="w-full flex max-w-md gap-4"
           onSubmit={handleSubmit(onSubmit)}
-          aria-disabled={!selectedForAssociation}
+          aria-disabled={!selectedCardId}
         >
           <div className="flex-1">
             <Input

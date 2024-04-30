@@ -1,5 +1,5 @@
 export type gameStage = "lobby" | "game" | "end";
-export type moveStage = "association" | "selecting" | "gassing";
+export type moveStage = "association" | "selecting" | "guessing";
 
 export type roomType = {
   createdAt: Date;
@@ -9,6 +9,7 @@ export type roomType = {
   activePlayer?: string;
   selectedForAssociation?: string;
   association?: string;
+  result?: { [key: string]: number };
 };
 
 export type playerType = {

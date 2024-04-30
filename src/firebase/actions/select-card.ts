@@ -4,8 +4,10 @@ import { playerType } from "@/types";
 
 export default async function selectCard(
   cardId: string,
+  fileName: string,
   roomId: string,
   userId: string,
+  original?: boolean,
 ) {
   const user = await getDoc(doc(db, "rooms", roomId, "players", userId));
   const { nickname } = user.data() as playerType;
@@ -14,6 +16,8 @@ export default async function selectCard(
     {
       selectedCardId: cardId,
       playerNickname: nickname,
+      fileName: fileName,
+      original: Boolean(original),
     },
     { merge: true },
   );
@@ -25,11 +29,12 @@ export default async function selectCard(
   const playersLength = await getDocs(
     collection(db, "rooms", roomId, "players"),
   ).then((players) => players.docs.length);
-  if (selectedCardsLength === playersLength - 1) {
+
+  if (selectedCardsLength === playersLength) {
     await setDoc(
       doc(db, "rooms", roomId),
       {
-        moveStage: "gassing",
+        moveStage: "guessing",
       },
       { merge: true },
     );

@@ -1,16 +1,14 @@
 import { ImageCard } from "./image-card";
-import { useCollection, useDocument } from "react-firebase-hooks/firestore";
-import { collection, doc, setDoc } from "firebase/firestore";
+import { useCollection } from "react-firebase-hooks/firestore";
+import { collection } from "firebase/firestore";
 import { auth, db } from "@/firebase/firebase-config";
 import { Route } from "@/routes/room/$roomId.lazy";
 import { useMemo } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
-import selectCard from "@/firebase/actions/select-card-for-association";
-import { playerType, roomType } from "@/types";
 
 type CardsGridProps = {
   selectedCardId?: string;
-  onCardClick?: (cardId: string) => void;
+  onCardClick?: (cardId: string, fileName: string) => void;
 };
 
 export function CardsGrid({ selectedCardId, onCardClick }: CardsGridProps) {

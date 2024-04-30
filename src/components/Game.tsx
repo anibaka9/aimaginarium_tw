@@ -6,6 +6,8 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import { useDocument } from "react-firebase-hooks/firestore";
 import { Association } from "./assosiation";
 import { SelectingCard } from "./selecting-card";
+import Guessing from "./guessing";
+import MoveResults from "./move-results";
 
 export function Game() {
   const { roomId } = Route.useParams();
@@ -32,7 +34,11 @@ export function Game() {
     }
   }
 
-  if (moveStage === "gassing") {
-    return <div>Gassing</div>;
+  if (moveStage === "guessing") {
+    return <Guessing />;
+  }
+
+  if (moveStage === "end") {
+    return <MoveResults />;
   }
 }
