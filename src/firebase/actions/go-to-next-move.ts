@@ -87,8 +87,11 @@ export async function goToNextMove(roomId: string) {
   //clean up
 
   for (const card of selectedCards) {
-    const { id } = card;
+    const { id, selectedCardId } = card;
     batch.delete(doc(db, "rooms", roomId, "selectedCards", id));
+    batch.delete(
+      doc(db, "rooms", roomId, "players", id, "cards", selectedCardId),
+    );
   }
   for (const guessId of guessesIds) {
     batch.delete(doc(db, "rooms", roomId, "guesses", guessId));

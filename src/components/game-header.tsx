@@ -39,13 +39,9 @@ export function GameHeader() {
 
   const [roomValue] = useDocument(doc(db, "rooms", roomId));
 
-  console.log(roomValue?.data());
-
   const activePlayer = players.find(
     (player) => player.id === roomValue?.data()?.activePlayer,
   );
-
-  console.log(activePlayer);
 
   return (
     <div className="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-8 w-full">

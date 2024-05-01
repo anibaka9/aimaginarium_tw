@@ -7,6 +7,7 @@ import { Lobby } from "./lobby";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { JoinCreatedRoom } from "./join-created-room";
 import { Game } from "./Game";
+import { EndGame } from "./end-game";
 
 function Room() {
   const { roomId } = Route.useParams();
@@ -41,6 +42,8 @@ function Room() {
       return <Lobby />;
     case "game":
       return <Game />;
+    case "end":
+      return <EndGame />;
     default:
       return <div>Unknown</div>;
   }

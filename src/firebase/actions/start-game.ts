@@ -12,7 +12,7 @@ import {
 } from "firebase/firestore";
 import { db } from "../firebase-config";
 
-const CARDS_PER_PLAYER = 5;
+const CARDS_PER_PLAYER = 2;
 
 export async function startGame(roomId: string, players: playerWithIdType[]) {
   if (players) {
@@ -60,7 +60,7 @@ export async function startGame(roomId: string, players: playerWithIdType[]) {
         );
         secondBatch.set(newCardRef, card.data());
       }
-      cardsIndex = cardsIndex + 5;
+      cardsIndex = cardsIndex + CARDS_PER_PLAYER;
     }
 
     await secondBatch.update(doc(db, "rooms", roomId), {
