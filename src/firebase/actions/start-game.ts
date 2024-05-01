@@ -1,4 +1,4 @@
-import { playerWithIdType } from "@/types";
+import { playerType } from "@/types";
 import {
   collection,
   query,
@@ -14,7 +14,11 @@ import { db } from "../firebase-config";
 
 const CARDS_PER_PLAYER = 2;
 
-export async function startGame(roomId: string, players: playerWithIdType[]) {
+export async function startGame(roomId: string) {
+  const players = (
+    await getDocs(collection(db, "rooms", roomId, "players"))
+  ).docs.map((el) => ({ id: el.id, ...(el.data() as playerType) }));
+
   if (players) {
     const randomIndex = Math.floor(Math.random() * players.length);
     const randomPlayer = players[randomIndex];

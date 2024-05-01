@@ -11,8 +11,8 @@ export type roomType = {
   association?: string;
   result?: { [key: string]: number };
   cardsIndex?: number;
+  newRoomId?: string;
 };
-
 export type playerType = {
   nickname: string;
   host: boolean;

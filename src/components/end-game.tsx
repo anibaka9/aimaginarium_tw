@@ -18,16 +18,47 @@ To read more about using these font, please visit the Next.js documentation:
 - Pages Directory: https://nextjs.org/docs/pages/building-your-application/optimizing/fonts
 **/
 import { Button } from "@/components/ui/button";
-import { auth, db } from "@/firebase/firebase-config";
-import { playerType } from "@/types";
-import { collection } from "firebase/firestore";
+import { db } from "@/firebase/firebase-config";
+import { playerType, roomType } from "@/types";
+import { collection, doc } from "firebase/firestore";
 import { Route } from "@/routes/room/$roomId.lazy";
-import { useAuthState } from "react-firebase-hooks/auth";
-import { useCollection } from "react-firebase-hooks/firestore";
+import { useCollection, useDocument } from "react-firebase-hooks/firestore";
+import { cn } from "@/lib/utils";
+import { copyRoom } from "@/firebase/actions/copy-room";
+import { useNavigate } from "@tanstack/react-router";
+import { useEffect } from "react";
+
+type PlayerCardProps = {
+  isWinner: boolean;
+  nickname: string;
+  score: number;
+};
+
+function PlayerCard({ isWinner, nickname, score }: PlayerCardProps) {
+  return (
+    <div
+      className={cn(
+        "rounded-lg p-4 flex flex-col items-center justify-center",
+        isWinner ? "bg-primary text-white" : "bg-gray-200 dark:bg-gray-700",
+      )}
+    >
+      <div className="w-10 h-10 rounded-full mb-2 bg-white" />
+      <span className="text-sm font-medium">{nickname}</span>
+      <span
+        className={cn(
+          " text-sm",
+          isWinner ? "text-white" : "text-gray-500 dark:text-gray-400",
+        )}
+      >
+        Score: {score}
+      </span>
+    </div>
+  );
+}
 
 export function EndGame() {
   const { roomId } = Route.useParams();
-  const [user] = useAuthState(auth);
+  const navigate = useNavigate();
 
   const [playersValue] = useCollection(
     collection(db, "rooms", roomId, "players"),
@@ -38,6 +69,27 @@ export function EndGame() {
       id: doc.id,
     })) || [];
 
+  const winner = players.reduce((winner, player) => {
+    if (player.score > winner?.score) {
+      return player;
+    }
+    return winner;
+  }, players[0]);
+
+  const onStartNewGame = async () => {
+    await copyRoom(roomId);
+  };
+
+  const [roomValue] = useDocument(doc(db, "rooms", roomId));
+
+  const { newRoomId } = (roomValue?.data() || {}) as roomType;
+
+  useEffect(() => {
+    if (newRoomId) {
+      navigate({ to: "/room/$roomId", params: { roomId: newRoomId } });
+    }
+  }, [newRoomId, navigate]);
+
   return (
     <main className="flex flex-col items-center justify-center h-screen bg-gray-100 dark:bg-gray-900">
       <div className="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-8 w-full max-w-3xl">
@@ -45,40 +97,22 @@ export function EndGame() {
           <h1 className="text-2xl font-bold">Imaginarium</h1>
           <div className="flex items-center space-x-2">
             <span className="text-gray-500 dark:text-gray-400">
-              Winner: Alice
+              Winner: {winner?.nickname}
             </span>
           </div>
         </div>
         <div className="grid grid-cols-4 gap-4">
-          <div className="bg-primary text-white rounded-lg p-4 flex flex-col items-center justify-center">
-            <div className="w-10 h-10 bg-white rounded-full mb-2" />
-            <span className="text-sm font-medium">Alice</span>
-            <span className="text-white text-sm">Score: 42</span>
-          </div>
-          <div className="bg-gray-200 dark:bg-gray-700 rounded-lg p-4 flex flex-col items-center justify-center">
-            <div className="w-10 h-10 bg-secondary rounded-full mb-2" />
-            <span className="text-sm font-medium">Bob (me)</span>
-            <span className="text-gray-500 dark:text-gray-400 text-sm">
-              Score: 38
-            </span>
-          </div>
-          <div className="bg-gray-200 dark:bg-gray-700 rounded-lg p-4 flex flex-col items-center justify-center">
-            <div className="w-10 h-10 bg-tertiary rounded-full mb-2" />
-            <span className="text-sm font-medium">Charlie</span>
-            <span className="text-gray-500 dark:text-gray-400 text-sm">
-              Score: 29
-            </span>
-          </div>
-          <div className="bg-gray-200 dark:bg-gray-700 rounded-lg p-4 flex flex-col items-center justify-center">
-            <div className="w-10 h-10 bg-quaternary rounded-full mb-2" />
-            <span className="text-sm font-medium">David</span>
-            <span className="text-gray-500 dark:text-gray-400 text-sm">
-              Score: 22
-            </span>
-          </div>
+          {players.map((player) => (
+            <PlayerCard
+              key={player.id}
+              isWinner={player.id === winner?.id}
+              score={player.score}
+              nickname={player.nickname}
+            />
+          ))}
         </div>
         <div className="flex justify-center mt-8">
-          <Button>New Game</Button>
+          <Button onClick={onStartNewGame}>New Game</Button>
         </div>
       </div>
     </main>

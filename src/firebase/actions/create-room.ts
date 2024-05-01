@@ -1,12 +1,8 @@
 import { doc, writeBatch } from "firebase/firestore";
 import { auth, db } from "../firebase-config";
-import ShortUniqueId from "short-unique-id";
 import { signInAnonymously } from "firebase/auth";
 import { roomType } from "@/types";
-
-const alphabet = [...Array(26)].map((_, i) => String.fromCharCode(i + 65));
-
-const idGenerator = new ShortUniqueId({ length: 4, dictionary: alphabet });
+import { idGenerator } from "@/lib/utils";
 
 export async function createRoom(nickname: string): Promise<string> {
   const {

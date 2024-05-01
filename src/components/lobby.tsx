@@ -52,7 +52,7 @@ export function Lobby() {
 
   const onSubmit = async () => {
     if (players) {
-      await startGame(roomId, players);
+      await startGame(roomId);
     }
   };
 
