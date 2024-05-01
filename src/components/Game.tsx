@@ -8,6 +8,8 @@ import { Association } from "./assosiation";
 import { SelectingCard } from "./selecting-card";
 import Guessing from "./guessing";
 import MoveResults from "./move-results";
+import { GameHeader } from "./game-header";
+import { WaitingGrid } from "./waiting-grid";
 
 export function Game() {
   const { roomId } = Route.useParams();
@@ -18,27 +20,34 @@ export function Game() {
   const { activePlayer, moveStage } = room || {};
   const isActivePlayer = user?.uid === activePlayer;
 
-  if (moveStage === "association") {
-    if (isActivePlayer) {
-      return <Association />;
-    } else {
-      return <div>Waiting for player</div>;
-    }
-  }
+  return (
+    <div>
+      <GameHeader />
+      {(() => {
+        if (moveStage === "association") {
+          if (isActivePlayer) {
+            return <Association />;
+          } else {
+            return <WaitingGrid />;
+          }
+        }
 
-  if (moveStage === "selecting") {
-    if (isActivePlayer) {
-      return "Waiting for players to select cards";
-    } else {
-      return <SelectingCard />;
-    }
-  }
+        if (moveStage === "selecting") {
+          if (isActivePlayer) {
+            return <WaitingGrid />;
+          } else {
+            return <SelectingCard />;
+          }
+        }
 
-  if (moveStage === "guessing") {
-    return <Guessing />;
-  }
+        if (moveStage === "guessing") {
+          return <Guessing />;
+        }
 
-  if (moveStage === "end") {
-    return <MoveResults />;
-  }
+        if (moveStage === "end") {
+          return <MoveResults />;
+        }
+      })()}
+    </div>
+  );
 }

@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { useDocument } from "react-firebase-hooks/firestore";
 import { auth, db } from "@/firebase/firebase-config";
-import { doc, setDoc } from "firebase/firestore";
+import { doc, updateDoc } from "firebase/firestore";
 import { Route } from "@/routes/room/$roomId.lazy";
 import selectCard from "@/firebase/actions/select-card";
 import { useAuthState } from "react-firebase-hooks/auth";
@@ -41,14 +41,10 @@ export function Association() {
   undefined;
 
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
-    await setDoc(
-      doc(db, "rooms", roomId),
-      {
-        association: data.association,
-        moveStage: "selecting",
-      },
-      { merge: true },
-    );
+    await updateDoc(doc(db, "rooms", roomId), {
+      association: data.association,
+      moveStage: "selecting",
+    });
   };
 
   const onCardClick = (cardId: string, fileName: string) => {

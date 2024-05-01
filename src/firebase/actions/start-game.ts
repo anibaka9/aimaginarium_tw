@@ -63,7 +63,7 @@ export async function startGame(roomId: string, players: playerWithIdType[]) {
       cardsIndex = cardsIndex + 5;
     }
 
-    await secondBatch.set(doc(db, "rooms", roomId), {
+    await secondBatch.update(doc(db, "rooms", roomId), {
       stage: "game",
       moveStage: "association",
       activePlayer: randomPlayer?.id,

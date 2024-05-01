@@ -1,8 +1,12 @@
-import { db } from "@/firebase/firebase-config";
+import { auth, db } from "@/firebase/firebase-config";
 import { Route } from "@/routes/room/$roomId.lazy";
-import { collection } from "firebase/firestore";
-import { useCollection } from "react-firebase-hooks/firestore";
+import { collection, doc } from "firebase/firestore";
+import { useCollection, useDocument } from "react-firebase-hooks/firestore";
 import { ImageCard } from "./image-card";
+import { Button } from "./ui/button";
+import { roomType } from "@/types";
+import { useAuthState } from "react-firebase-hooks/auth";
+import { goToNextMove } from "@/firebase/actions/go-to-next-move";
 
 function MoveResults() {
   const { roomId } = Route.useParams();
@@ -32,6 +36,15 @@ function MoveResults() {
       playerNickname: string;
     }),
   }));
+  const [user] = useAuthState(auth);
+
+  const [roomValue] = useDocument(doc(db, "rooms", roomId));
+
+  const room = roomValue?.data() as roomType;
+
+  const { activePlayer } = room || {};
+
+  const isActivePlayer = user?.uid === activePlayer;
 
   return (
     <div className="flex flex-col items-center gap-4 p-4">
@@ -43,10 +56,13 @@ function MoveResults() {
             </p>
           </div>
         ))}
+        {isActivePlayer ? (
+          <Button onClick={() => goToNextMove(roomId)}>Go to next move</Button>
+        ) : null}
       </div>
       <div className="flex flex-wrap gap-4 w-full justify-center">
         {selectedCards.map((card) => (
-          <div>
+          <div key={card.selectedCardId}>
             <p>card by {card.playerNickname}</p>
             <p>
               {card?.guesses?.length

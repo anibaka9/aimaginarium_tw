@@ -1,4 +1,11 @@
-import { setDoc, doc, getDoc, collection, getDocs } from "firebase/firestore";
+import {
+  setDoc,
+  doc,
+  getDoc,
+  collection,
+  getDocs,
+  updateDoc,
+} from "firebase/firestore";
 import { db } from "../firebase-config";
 import { playerType } from "@/types";
 
@@ -11,16 +18,12 @@ export default async function selectCard(
 ) {
   const user = await getDoc(doc(db, "rooms", roomId, "players", userId));
   const { nickname } = user.data() as playerType;
-  await setDoc(
-    doc(db, "rooms", roomId, "selectedCards", userId),
-    {
-      selectedCardId: cardId,
-      playerNickname: nickname,
-      fileName: fileName,
-      original: Boolean(original),
-    },
-    { merge: true },
-  );
+  await setDoc(doc(db, "rooms", roomId, "selectedCards", userId), {
+    selectedCardId: cardId,
+    playerNickname: nickname,
+    fileName: fileName,
+    original: Boolean(original),
+  });
   const selectedCards = await getDocs(
     collection(db, "rooms", roomId, "selectedCards"),
   );
@@ -31,12 +34,8 @@ export default async function selectCard(
   ).then((players) => players.docs.length);
 
   if (selectedCardsLength === playersLength) {
-    await setDoc(
-      doc(db, "rooms", roomId),
-      {
-        moveStage: "guessing",
-      },
-      { merge: true },
-    );
+    await updateDoc(doc(db, "rooms", roomId), {
+      moveStage: "guessing",
+    });
   }
 }
