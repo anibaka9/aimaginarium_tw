@@ -12,6 +12,7 @@ import {
 } from "firebase/firestore";
 import { db } from "../firebase-config";
 import { playerType, roomType } from "@/types";
+import { geSelctedCardsQuery } from "../queries/selected-cards";
 
 export async function goToNextMove(roomId: string) {
   const batch = writeBatch(db);
@@ -38,18 +39,18 @@ export async function goToNextMove(roomId: string) {
     await getDocs(collection(db, "rooms", roomId, "guesses"))
   ).docs.map((doc) => doc.id);
 
-  const selectedCards = (
-    await getDocs(collection(db, "rooms", roomId, "selectedCards"))
-  ).docs.map((doc) => ({
-    id: doc.id,
-    ...(doc.data() as {
-      selectedCardId: string;
-      playerNickname: string;
-      fileName: string;
-      original: boolean;
-      guesses?: string[];
+  const selectedCards = (await getDocs(geSelctedCardsQuery(roomId))).docs.map(
+    (doc) => ({
+      id: doc.id,
+      ...(doc.data() as {
+        selectedCardId: string;
+        playerNickname: string;
+        fileName: string;
+        original: boolean;
+        guesses?: string[];
+      }),
     }),
-  }));
+  );
 
   // deal new cards
 

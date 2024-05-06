@@ -8,6 +8,8 @@ import {
 } from "firebase/firestore";
 import { db } from "../firebase-config";
 import { playerType } from "@/types";
+import { idGenerator } from "@/lib/utils";
+import { geSelctedCardsQuery } from "../queries/selected-cards";
 
 export default async function selectCard(
   cardId: string,
@@ -23,10 +25,9 @@ export default async function selectCard(
     playerNickname: nickname,
     fileName: fileName,
     original: Boolean(original),
+    randomKey: idGenerator.rnd(),
   });
-  const selectedCards = await getDocs(
-    collection(db, "rooms", roomId, "selectedCards"),
-  );
+  const selectedCards = await getDocs(geSelctedCardsQuery(roomId));
   const selectedCardsLength = selectedCards.docs.length;
 
   const playersLength = await getDocs(

@@ -6,14 +6,13 @@ import { roomType } from "@/types";
 import { ImageCard } from "./image-card";
 import { useAuthState } from "react-firebase-hooks/auth";
 import guessCard from "@/firebase/actions/guess-card";
+import { geSelctedCardsQuery } from "@/firebase/queries/selected-cards";
 
 function Guessing() {
   const [user] = useAuthState(auth);
 
   const { roomId } = Route.useParams();
-  const [selectedCardsValue] = useCollection(
-    collection(db, "rooms", roomId, "selectedCards"),
-  );
+  const [selectedCardsValue] = useCollection(geSelctedCardsQuery(roomId));
 
   const [guessedCardValue] = useDocument(
     doc(db, "rooms", roomId, "guesses", user?.uid || ""),

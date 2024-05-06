@@ -1,5 +1,6 @@
 import { collection, doc, getDocs, writeBatch } from "firebase/firestore";
 import { db } from "../firebase-config";
+import { geSelctedCardsQuery } from "../queries/selected-cards";
 
 export async function computeScores(roomId: string) {
   const guesses = (
@@ -11,17 +12,17 @@ export async function computeScores(roomId: string) {
       playerNickname: string;
     }),
   }));
-  const selectCards = (
-    await getDocs(collection(db, "rooms", roomId, "selectedCards"))
-  ).docs.map((doc) => ({
-    id: doc.id,
-    ...(doc.data() as {
-      selectedCardId: string;
-      playerNickname: string;
-      fileName: string;
-      original: boolean;
+  const selectCards = (await getDocs(geSelctedCardsQuery(roomId))).docs.map(
+    (doc) => ({
+      id: doc.id,
+      ...(doc.data() as {
+        selectedCardId: string;
+        playerNickname: string;
+        fileName: string;
+        original: boolean;
+      }),
     }),
-  }));
+  );
 
   const results: { [key: string]: number } = {};
   const batch = writeBatch(db);

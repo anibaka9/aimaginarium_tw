@@ -7,12 +7,11 @@ import { Button } from "./ui/button";
 import { roomType } from "@/types";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { goToNextMove } from "@/firebase/actions/go-to-next-move";
+import { geSelctedCardsQuery } from "@/firebase/queries/selected-cards";
 
 function MoveResults() {
   const { roomId } = Route.useParams();
-  const [selectedCardsValue] = useCollection(
-    collection(db, "rooms", roomId, "selectedCards"),
-  );
+  const [selectedCardsValue] = useCollection(geSelctedCardsQuery(roomId));
 
   const selectedCards =
     selectedCardsValue?.docs.map((doc) => ({
