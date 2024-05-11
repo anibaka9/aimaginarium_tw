@@ -2,17 +2,19 @@ import { playerType } from "@/types";
 import {
   collection,
   query,
-  limit,
   getDocs,
   writeBatch,
   doc,
   startAt,
   endAt,
   orderBy,
+  getDoc,
 } from "firebase/firestore";
 import { db } from "../firebase-config";
+import { sampleSize } from "lodash-es";
 
 const CARDS_PER_PLAYER = 2;
+const DECK_SIZE = 20;
 
 export async function startGame(roomId: string) {
   const players = (
@@ -22,17 +24,24 @@ export async function startGame(roomId: string) {
   if (players) {
     const randomIndex = Math.floor(Math.random() * players.length);
     const randomPlayer = players[randomIndex];
+    const cardIdsData = await getDoc(doc(db, "cardIds", "cardIds"));
 
-    const cardsRef = collection(db, "cards");
-    const cards = query(cardsRef, limit(20));
-    const cardsSnapshot = await getDocs(cards);
+    const { cardIds } = cardIdsData.data() as { cardIds: string[] };
+    const sampleCardIds = sampleSize(cardIds, DECK_SIZE);
 
     const batch = writeBatch(db);
-    for (let i = 0; i < cardsSnapshot.docs.length; i++) {
-      const card = cardsSnapshot.docs[i];
-      const newCardRef = doc(db, "rooms", roomId, "deck", card.id);
-      batch.set(newCardRef, { ...card.data(), index: i });
-    }
+    const promises = sampleCardIds.map(
+      (cardId, index) =>
+        new Promise((resolve) => {
+          getDoc(doc(db, "cards", cardId)).then((cardData) => {
+            const newCardRef = doc(db, "rooms", roomId, "deck", cardId);
+            batch.set(newCardRef, { ...cardData.data(), index });
+            resolve(newCardRef);
+          });
+        }),
+    );
+
+    await Promise.all(promises);
 
     await batch.commit();
 
@@ -67,7 +76,7 @@ export async function startGame(roomId: string) {
       cardsIndex = cardsIndex + CARDS_PER_PLAYER;
     }
 
-    await secondBatch.update(doc(db, "rooms", roomId), {
+    secondBatch.update(doc(db, "rooms", roomId), {
       stage: "game",
       moveStage: "association",
       activePlayer: randomPlayer?.id,
