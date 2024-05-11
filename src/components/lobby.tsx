@@ -14,16 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Avatar } from "@/components/ui/avatar";
 import { Route } from "@/routes/room/$roomId.lazy";
 import { useCollection, useDocument } from "react-firebase-hooks/firestore";
-import {
-  collection,
-  doc,
-  getDoc,
-  getDocs,
-  limit,
-  query,
-  setDoc,
-  writeBatch,
-} from "firebase/firestore";
+import { collection, doc } from "firebase/firestore";
 import { auth, db } from "@/firebase/firebase-config";
 import { playerType, roomType } from "@/types";
 import { useAuthState } from "react-firebase-hooks/auth";
