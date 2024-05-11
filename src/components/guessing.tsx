@@ -1,6 +1,6 @@
 import { auth, db } from "@/firebase/firebase-config";
 import { Route } from "@/routes/room/$roomId.lazy";
-import { collection, doc } from "firebase/firestore";
+import { doc } from "firebase/firestore";
 import { useCollection, useDocument } from "react-firebase-hooks/firestore";
 import { roomType } from "@/types";
 import { ImageCard } from "./image-card";
