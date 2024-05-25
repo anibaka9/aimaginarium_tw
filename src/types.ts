@@ -21,8 +21,9 @@ export type playerType = {
 
 export type playerWithIdType = playerType & { id: string };
 
-export type CardType = {
+export type cardType = {
   imageName: string;
-  imageUrl?: string;
-  id: string;
+  fileName: string;
 };
+
+export type cardTypeWithId = cardType & { id: string };

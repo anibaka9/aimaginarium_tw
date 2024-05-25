@@ -1,17 +1,17 @@
-import { auth, db } from "@/firebase/firebase-config";
-import { Route } from "@/routes/room/$roomId.lazy";
-import { collection, doc } from "firebase/firestore";
-import { useCollection, useDocument } from "react-firebase-hooks/firestore";
+import { auth } from "@/firebase/firebase-config";
+import { Route } from "@/routes/room/$roomId";
+import { useCollection } from "react-firebase-hooks/firestore";
 import { ImageCard } from "./image-card";
 import { Button } from "./ui/button";
-import { roomType } from "@/types";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { goToNextMove } from "@/firebase/actions/go-to-next-move";
-import { geSelctedCardsQuery } from "@/firebase/queries/selected-cards";
+import { geSelectedCardsQuery } from "@/firebase/queries/selected-cards";
+import useMoveResults from "@/firebase/hooks/useMoveResults";
+import useRoom from "@/firebase/hooks/useRoom";
 
 function MoveResults() {
   const { roomId } = Route.useParams();
-  const [selectedCardsValue] = useCollection(geSelctedCardsQuery(roomId));
+  const [selectedCardsValue] = useCollection(geSelectedCardsQuery(roomId));
 
   const selectedCards =
     selectedCardsValue?.docs.map((doc) => ({
@@ -25,21 +25,11 @@ function MoveResults() {
       }),
     })) || [];
 
-  const [resultsValue] = useCollection(
-    collection(db, "rooms", roomId, "moveResult"),
-  );
-  const moveResult = resultsValue?.docs.map((doc) => ({
-    id: doc.id,
-    ...(doc.data() as {
-      score: number;
-      playerNickname: string;
-    }),
-  }));
+  const moveResult = useMoveResults();
+
   const [user] = useAuthState(auth);
 
-  const [roomValue] = useDocument(doc(db, "rooms", roomId));
-
-  const room = roomValue?.data() as roomType;
+  const room = useRoom();
 
   const { activePlayer } = room || {};
 

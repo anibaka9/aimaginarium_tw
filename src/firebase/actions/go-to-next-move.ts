@@ -12,16 +12,21 @@ import {
 } from "firebase/firestore";
 import { db } from "../firebase-config";
 import { playerType, roomType } from "@/types";
-import { geSelctedCardsQuery } from "../queries/selected-cards";
+import { geSelectedCardsQuery } from "../queries/selected-cards";
+import playersQuery from "../queries/players";
+import moveResultQuery from "../queries/moveResult";
+import roomQuery from "../queries/room";
+import guessesQuery from "../queries/guesses";
+import playerGuessQuery from "../queries/playerGuess";
+import playerCardQuery from "../queries/playerCard";
+import { selectedCardQuery } from "../queries/selectedCard";
 
 export async function goToNextMove(roomId: string) {
   const batch = writeBatch(db);
 
   // update scores
 
-  const results = (
-    await getDocs(collection(db, "rooms", roomId, "moveResult"))
-  ).docs.map((doc) => ({
+  const results = (await getDocs(moveResultQuery(roomId))).docs.map((doc) => ({
     id: doc.id,
     ...(doc.data() as {
       score: number;
@@ -35,11 +40,11 @@ export async function goToNextMove(roomId: string) {
     });
   }
 
-  const guessesIds = (
-    await getDocs(collection(db, "rooms", roomId, "guesses"))
-  ).docs.map((doc) => doc.id);
+  const guessesIds = (await getDocs(guessesQuery(roomId))).docs.map(
+    (doc) => doc.id,
+  );
 
-  const selectedCards = (await getDocs(geSelctedCardsQuery(roomId))).docs.map(
+  const selectedCards = (await getDocs(geSelectedCardsQuery(roomId))).docs.map(
     (doc) => ({
       id: doc.id,
       ...(doc.data() as {
@@ -54,15 +59,13 @@ export async function goToNextMove(roomId: string) {
 
   // deal new cards
 
-  const players = (
-    await getDocs(collection(db, "rooms", roomId, "players"))
-  ).docs.map((doc) => ({
+  const players = (await getDocs(playersQuery(roomId))).docs.map((doc) => ({
     id: doc.id,
     ...(doc.data() as playerType),
   }));
 
   const deckRef = collection(db, "rooms", roomId, "deck");
-  const room = (await getDoc(doc(db, "rooms", roomId))).data() as roomType;
+  const room = (await getDoc(roomQuery(roomId))).data() as roomType;
   const { cardsIndex = 0, activePlayer } = room;
 
   const newCards = await getDocs(
@@ -78,10 +81,7 @@ export async function goToNextMove(roomId: string) {
     const newCard = newCards.docs[i];
     const player = players[i];
     if (newCard) {
-      batch.set(
-        doc(db, "rooms", roomId, "players", player.id, "cards", newCard.id),
-        newCard.data(),
-      );
+      batch.set(playerCardQuery(roomId, player.id, newCard.id), newCard.data());
     }
   }
 
@@ -89,13 +89,11 @@ export async function goToNextMove(roomId: string) {
 
   for (const card of selectedCards) {
     const { id, selectedCardId } = card;
-    batch.delete(doc(db, "rooms", roomId, "selectedCards", id));
-    batch.delete(
-      doc(db, "rooms", roomId, "players", id, "cards", selectedCardId),
-    );
+    batch.delete(selectedCardQuery(roomId, id));
+    batch.delete(playerCardQuery(roomId, id, selectedCardId));
   }
   for (const guessId of guessesIds) {
-    batch.delete(doc(db, "rooms", roomId, "guesses", guessId));
+    batch.delete(playerGuessQuery(roomId, guessId));
   }
 
   for (const result of results) {
@@ -107,7 +105,7 @@ export async function goToNextMove(roomId: string) {
   const gameFinished = newCards.docs.length < players.length;
 
   if (gameFinished) {
-    batch.update(doc(db, "rooms", roomId), {
+    batch.update(roomQuery(roomId), {
       stage: "end",
     });
   } else {
@@ -116,7 +114,7 @@ export async function goToNextMove(roomId: string) {
         (players.findIndex((player) => player.id === activePlayer) + 1) %
           players.length
       ];
-    batch.update(doc(db, "rooms", roomId), {
+    batch.update(roomQuery(roomId), {
       activePlayer: nextActivePlayer?.id,
       cardsIndex: cardsIndex + players.length,
       association: "",

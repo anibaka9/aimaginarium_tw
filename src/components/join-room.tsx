@@ -21,6 +21,8 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { signInAnonymously } from "firebase/auth";
 import { useState } from "react";
+import playerQuery from "@/firebase/queries/player";
+import roomQuery from "@/firebase/queries/room";
 
 type Inputs = {
   nickname: string;
@@ -42,12 +44,10 @@ export function JoinRoom() {
       user: { uid },
     } = await signInAnonymously(auth);
 
-    const roomRef = doc(db, "rooms", roomId);
-
-    const roomSnap = await getDoc(roomRef);
+    const roomSnap = await getDoc(roomQuery(roomId));
 
     if (roomSnap.exists()) {
-      await setDoc(doc(db, "rooms", roomId, "players", uid), {
+      await setDoc(playerQuery(roomId, uid), {
         user: uid,
         nickname: nickname,
       });

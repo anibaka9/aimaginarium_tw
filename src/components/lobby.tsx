@@ -12,28 +12,21 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar } from "@/components/ui/avatar";
-import { Route } from "@/routes/room/$roomId.lazy";
-import { useCollection, useDocument } from "react-firebase-hooks/firestore";
-import { collection, doc } from "firebase/firestore";
-import { auth, db } from "@/firebase/firebase-config";
-import { playerType, roomType } from "@/types";
+import { Route } from "@/routes/room/$roomId";
+import { auth } from "@/firebase/firebase-config";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { CopyRoomLink } from "./copy-room-link";
 import { startGame } from "@/firebase/actions/start-game";
+import usePlayers from "@/firebase/hooks/usePlayers";
+import useRoom from "@/firebase/hooks/useRoom";
 
 export function Lobby() {
   const [user] = useAuthState(auth);
 
   const { roomId } = Route.useParams();
-  const [playersValue] = useCollection(
-    collection(db, "rooms", roomId, "players"),
-  );
-  const players = playersValue?.docs.map((doc) => ({
-    ...(doc.data() as playerType),
-    id: doc.id,
-  }));
-  const [roomValue] = useDocument(doc(db, "rooms", roomId));
-  const room = roomValue?.data() as roomType;
+
+  const players = usePlayers();
+  const room = useRoom();
 
   const isHost = room?.host === user?.uid;
 

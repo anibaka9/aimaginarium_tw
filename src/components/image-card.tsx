@@ -3,6 +3,7 @@ import { ref as storageRef } from "firebase/storage";
 import { useDownloadURL } from "react-firebase-hooks/storage";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
+import { Skeleton } from "@/components/ui/skeleton";
 
 type CardProps = {
   id: string;
@@ -26,7 +27,7 @@ export function ImageCard({
   return (
     <Card
       className={cn(
-        "max-w-[300px] aspect-card overflow-hidden ",
+        "max-w-[300px] aspect-card overflow-hidden border-2 border-transparent",
         selected && "border-2 border-red-500",
         !blocked &&
           "hover:border-blue-500 hover:border-2  hover:shadow-lg cursor-pointer",
@@ -34,13 +35,13 @@ export function ImageCard({
       onClick={() => onCardClick && onCardClick(id, fileName)}
     >
       {loading ? (
-        "loading"
+        <Skeleton className="h-[523.5px] w-[300px] rounded-xl" />
       ) : (
         <img
           alt="Image"
-          className="aspect-cover object-center"
-          height={2912}
-          width={1664}
+          className="aspect-cover object-center h-[523.5px] w-[300px]"
+          height={523.5}
+          width={300}
           src={downloadUrl}
         />
       )}

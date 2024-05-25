@@ -11,7 +11,11 @@ export const Route = createRootRoute({
       <Outlet />
     </>
   ),
-  loader: async () => {
-    await signInAnonymously(auth);
+  beforeLoad: async () => {
+    const {
+      user: { uid },
+    } = await signInAnonymously(auth);
+    console.log("beforeLoad", uid);
+    return uid;
   },
 });

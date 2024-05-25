@@ -13,13 +13,13 @@ import { createFileRoute } from '@tanstack/react-router'
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
+import { Route as RoomRoomIdImport } from './routes/room/$roomId'
 
 // Create Virtual Routes
 
 const JoinLazyImport = createFileRoute('/join')()
 const CreateLazyImport = createFileRoute('/create')()
 const IndexLazyImport = createFileRoute('/')()
-const RoomRoomIdLazyImport = createFileRoute('/room/$roomId')()
 
 // Create/Update Routes
 
@@ -38,10 +38,10 @@ const IndexLazyRoute = IndexLazyImport.update({
   getParentRoute: () => rootRoute,
 } as any).lazy(() => import('./routes/index.lazy').then((d) => d.Route))
 
-const RoomRoomIdLazyRoute = RoomRoomIdLazyImport.update({
+const RoomRoomIdRoute = RoomRoomIdImport.update({
   path: '/room/$roomId',
   getParentRoute: () => rootRoute,
-} as any).lazy(() => import('./routes/room/$roomId.lazy').then((d) => d.Route))
+} as any)
 
 // Populate the FileRoutesByPath interface
 
@@ -60,7 +60,7 @@ declare module '@tanstack/react-router' {
       parentRoute: typeof rootRoute
     }
     '/room/$roomId': {
-      preLoaderRoute: typeof RoomRoomIdLazyImport
+      preLoaderRoute: typeof RoomRoomIdImport
       parentRoute: typeof rootRoute
     }
   }
@@ -72,7 +72,7 @@ export const routeTree = rootRoute.addChildren([
   IndexLazyRoute,
   CreateLazyRoute,
   JoinLazyRoute,
-  RoomRoomIdLazyRoute,
+  RoomRoomIdRoute,
 ])
 
 /* prettier-ignore-end */

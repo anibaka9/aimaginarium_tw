@@ -12,14 +12,17 @@ import {
 } from "firebase/firestore";
 import { db } from "../firebase-config";
 import { sampleSize } from "lodash-es";
+import playersQuery from "../queries/players";
+import roomQuery from "../queries/room";
 
-const CARDS_PER_PLAYER = 2;
+const CARDS_PER_PLAYER = 5;
 const DECK_SIZE = 20;
 
 export async function startGame(roomId: string) {
-  const players = (
-    await getDocs(collection(db, "rooms", roomId, "players"))
-  ).docs.map((el) => ({ id: el.id, ...(el.data() as playerType) }));
+  const players = (await getDocs(playersQuery(roomId))).docs.map((el) => ({
+    id: el.id,
+    ...(el.data() as playerType),
+  }));
 
   if (players) {
     const randomIndex = Math.floor(Math.random() * players.length);
@@ -76,7 +79,7 @@ export async function startGame(roomId: string) {
       cardsIndex = cardsIndex + CARDS_PER_PLAYER;
     }
 
-    secondBatch.update(doc(db, "rooms", roomId), {
+    secondBatch.update(roomQuery(roomId), {
       stage: "game",
       moveStage: "association",
       activePlayer: randomPlayer?.id,

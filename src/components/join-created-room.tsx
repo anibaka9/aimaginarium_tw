@@ -12,8 +12,9 @@ import { Label } from "@/components/ui/label";
 import { signInAnonymously } from "firebase/auth";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
-import { Route } from "@/routes/room/$roomId.lazy";
+import { Route } from "@/routes/room/$roomId";
 import { CopyRoomLink } from "./copy-room-link";
+import playerQuery from "@/firebase/queries/player";
 
 type Inputs = {
   nickname: string;
@@ -32,7 +33,7 @@ export function JoinCreatedRoom() {
     const {
       user: { uid },
     } = await signInAnonymously(auth);
-    await setDoc(doc(db, "rooms", roomId, "players", uid), {
+    await setDoc(playerQuery(roomId, uid), {
       user: uid,
       nickname: data.nickname,
     });

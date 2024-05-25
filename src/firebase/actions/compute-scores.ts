@@ -1,18 +1,19 @@
 import { collection, doc, getDocs, writeBatch } from "firebase/firestore";
 import { db } from "../firebase-config";
-import { geSelctedCardsQuery } from "../queries/selected-cards";
+import { geSelectedCardsQuery } from "../queries/selected-cards";
+import guessesQuery from "../queries/guesses";
+import { selectedCardQuery } from "../queries/selectedCard";
+import roomQuery from "../queries/room";
 
 export async function computeScores(roomId: string) {
-  const guesses = (
-    await getDocs(collection(db, "rooms", roomId, "guesses"))
-  ).docs.map((doc) => ({
+  const guesses = (await getDocs(guessesQuery(roomId))).docs.map((doc) => ({
     id: doc.id,
     ...(doc.data() as {
       selectedCardId: string;
       playerNickname: string;
     }),
   }));
-  const selectCards = (await getDocs(geSelctedCardsQuery(roomId))).docs.map(
+  const selectCards = (await getDocs(geSelectedCardsQuery(roomId))).docs.map(
     (doc) => ({
       id: doc.id,
       ...(doc.data() as {
@@ -31,7 +32,7 @@ export async function computeScores(roomId: string) {
       (guess) => guess.selectedCardId === card.selectedCardId,
     );
     const guessesLength = cardGuesses.length;
-    batch.update(doc(db, "rooms", roomId, "selectedCards", card.id), {
+    batch.update(selectedCardQuery(roomId, card.id), {
       guesses: cardGuesses.map((guess) => guess.playerNickname),
     });
     if (card.original) {
@@ -45,7 +46,7 @@ export async function computeScores(roomId: string) {
       results[card.id] = (results[card.id] || 0) + guessesLength;
     }
   }
-  batch.update(doc(db, "rooms", roomId), {
+  batch.update(roomQuery(roomId), {
     moveStage: "end",
   });
 

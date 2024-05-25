@@ -7,12 +7,13 @@ import { Input } from "@/components/ui/input";
 import { CardsGrid } from "./cards-grid";
 import { Button } from "@/components/ui/button";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { useDocument } from "react-firebase-hooks/firestore";
 import { auth, db } from "@/firebase/firebase-config";
 import { doc, updateDoc } from "firebase/firestore";
-import { Route } from "@/routes/room/$roomId.lazy";
+import { Route } from "@/routes/room/$roomId";
 import selectCard from "@/firebase/actions/select-card";
 import { useAuthState } from "react-firebase-hooks/auth";
+import useSelectedCard from "@/firebase/hooks/useSelectedCard";
+import roomQuery from "@/firebase/queries/room";
 
 type Inputs = {
   association: string;
@@ -28,20 +29,10 @@ export function Association() {
   const { roomId } = Route.useParams();
   const [user] = useAuthState(auth);
 
-  const [selectedCardValue] = useDocument(
-    doc(db, "rooms", roomId, "selectedCards", user?.uid || ""),
-  );
-
-  const { selectedCardId } =
-    (selectedCardValue?.data() as
-      | {
-          selectedCardId: string;
-        }
-      | undefined) || {};
-  undefined;
+  const { selectedCardId } = useSelectedCard() || {};
 
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
-    await updateDoc(doc(db, "rooms", roomId), {
+    await updateDoc(roomQuery(roomId), {
       association: data.association,
       moveStage: "selecting",
     });
