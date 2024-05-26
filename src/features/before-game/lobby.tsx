@@ -15,7 +15,7 @@ import { Avatar } from "@/components/ui/avatar";
 import { Route } from "@/routes/room/$roomId";
 import { auth } from "@/firebase/firebase-config";
 import { useAuthState } from "react-firebase-hooks/auth";
-import { CopyRoomLink } from "./copy-room-link";
+import { CopyRoomLink } from "../../components/copy-room-link";
 import { startGame } from "@/firebase/actions/start-game";
 import usePlayers from "@/firebase/hooks/usePlayers";
 import useRoom from "@/firebase/hooks/useRoom";
@@ -42,7 +42,7 @@ export function Lobby() {
 
   return (
     <div className="flex h-screen items-center justify-center">
-      <Card>
+      <Card className="w-full max-w-sm">
         <CardHeader>
           <CardTitle className="text-2xl">🎨 Room name: {roomId}</CardTitle>
           <div>

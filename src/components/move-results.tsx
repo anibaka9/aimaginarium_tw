@@ -36,13 +36,14 @@ function MoveResults() {
   const isActivePlayer = user?.uid === activePlayer;
 
   return (
-    <div className="flex flex-col items-center gap-4 p-4">
-      <div className="flex flex-col items-center gap-4 p-4">
+    <div className="flex flex-col items-start gap-4 p-4">
+      <div className="flex flex-col  gap-4 p-4">
         {moveResult?.map((result) => (
-          <div key={result.id}>
-            <p>
-              {result.playerNickname}: +{result.score}
-            </p>
+          <div
+            key={result.id}
+            className="bg-gray-100 dark:bg-gray-700 rounded-lg px-4 py-2 text-gray-700 dark:text-gray-300 font-medium"
+          >
+            {result.playerNickname}: {result.score} points
           </div>
         ))}
         {isActivePlayer ? (
@@ -51,13 +52,10 @@ function MoveResults() {
       </div>
       <div className="flex flex-wrap gap-4 w-full justify-center">
         {selectedCards.map((card) => (
-          <div key={card.selectedCardId}>
-            <p>card by {card.playerNickname}</p>
-            <p>
-              {card?.guesses?.length
-                ? "Guessed by " + card?.guesses?.join(", ")
-                : " "}
-            </p>
+          <div
+            key={card.selectedCardId}
+            className="bg-gray-100 dark:bg-gray-700 rounded-lg p-4 flex flex-col items-center"
+          >
             <ImageCard
               key={card.selectedCardId}
               id={card.selectedCardId}
@@ -65,6 +63,19 @@ function MoveResults() {
               blocked={true}
               selected={card.original}
             />
+            {card.original ? (
+              <div className="text-gray-700 dark:text-gray-300 text-lg">
+                Original card
+              </div>
+            ) : null}
+            <div className="text-gray-700 dark:text-gray-300">
+              Card by {card.playerNickname}
+            </div>
+            <div className="text-gray-500 dark:text-gray-400 text-sm">
+              {card?.guesses?.length
+                ? "Guessed by " + card?.guesses?.join(", ")
+                : " "}
+            </div>
           </div>
         ))}
       </div>

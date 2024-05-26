@@ -1,6 +1,5 @@
-import { auth, db } from "@/firebase/firebase-config";
+import { auth } from "@/firebase/firebase-config";
 import { Route } from "@/routes/room/$roomId";
-import { doc } from "firebase/firestore";
 import { useCollection, useDocument } from "react-firebase-hooks/firestore";
 import { ImageCard } from "./image-card";
 import { useAuthState } from "react-firebase-hooks/auth";

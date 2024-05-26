@@ -61,8 +61,8 @@ export function JoinRoom() {
   };
   return (
     <div className="flex h-screen items-center justify-center">
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <Card className="w-full max-w-lg">
+      <form className="w-full max-w-sm" onSubmit={handleSubmit(onSubmit)}>
+        <Card>
           <CardHeader>
             <CardTitle className="text-2xl">Join a Game Room</CardTitle>
             <CardDescription>

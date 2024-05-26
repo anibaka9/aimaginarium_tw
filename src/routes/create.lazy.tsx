@@ -1,4 +1,4 @@
-import { CreateRoom } from "@/components/create-room";
+import { CreateRoom } from "@/features/before-game/create-room";
 import { createLazyFileRoute } from "@tanstack/react-router";
 
 export const Route = createLazyFileRoute("/create")({

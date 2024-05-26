@@ -1,7 +1,7 @@
 import { auth } from "@/firebase/firebase-config";
-import { Lobby } from "./lobby";
+import { Lobby } from "../features/before-game/lobby";
 import { useAuthState } from "react-firebase-hooks/auth";
-import { JoinCreatedRoom } from "./join-created-room";
+import { JoinCreatedRoom } from "../features/before-game/join-created-room";
 import { Game } from "./Game";
 import { EndGame } from "./end-game";
 import usePlayers from "@/firebase/hooks/usePlayers";

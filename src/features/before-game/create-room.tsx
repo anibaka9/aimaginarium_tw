@@ -14,8 +14,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { Button } from "./ui/button";
-import { Input } from "./ui/input";
+import { Button } from "../../components/ui/button";
+import { Input } from "../../components/ui/input";
 import { createRoom } from "@/firebase/actions/create-room";
 
 type Inputs = {
@@ -38,8 +38,8 @@ export function CreateRoom() {
 
   return (
     <div className="flex h-screen items-center justify-center">
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <Card className="w-full max-w-lg">
+      <form className="w-full max-w-sm" onSubmit={handleSubmit(onSubmit)}>
+        <Card>
           <CardHeader>
             <CardTitle className="text-2xl">Create a Game Room</CardTitle>
             <CardDescription>

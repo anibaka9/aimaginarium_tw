@@ -10,10 +10,10 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { signInAnonymously } from "firebase/auth";
-import { Button } from "./ui/button";
-import { Input } from "./ui/input";
+import { Button } from "../../components/ui/button";
+import { Input } from "../../components/ui/input";
 import { Route } from "@/routes/room/$roomId";
-import { CopyRoomLink } from "./copy-room-link";
+import { CopyRoomLink } from "../../components/copy-room-link";
 import playerQuery from "@/firebase/queries/player";
 
 type Inputs = {
@@ -41,7 +41,7 @@ export function JoinCreatedRoom() {
 
   return (
     <div className="flex h-screen items-center justify-center">
-      <Card className="w-full max-w-lg">
+      <Card className="w-full max-w-sm">
         <CardHeader>
           <CardTitle className="text-2xl">🎨 Room name: {roomId}</CardTitle>
           <div>

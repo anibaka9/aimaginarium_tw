@@ -1,5 +1,5 @@
 import { createLazyFileRoute } from "@tanstack/react-router";
-import { Forms } from "@/components/forms";
+import { Forms } from "@/features/before-game/forms";
 
 export const Route = createLazyFileRoute("/")({
   component: Index,
