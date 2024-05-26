@@ -6,6 +6,8 @@ import { useNavigate } from "@tanstack/react-router";
 import { useEffect } from "react";
 import usePlayers from "@/firebase/hooks/usePlayers";
 import useRoom from "@/firebase/hooks/useRoom";
+import { auth } from "@/firebase/firebase-config";
+import { useAuthState } from "react-firebase-hooks/auth";
 
 type PlayerCardProps = {
   isWinner: boolean;
@@ -56,6 +58,10 @@ export function EndGame() {
 
   const newRoomId = room?.newRoomId;
 
+  const [user] = useAuthState(auth);
+
+  const isHost = room?.host === user?.uid;
+
   useEffect(() => {
     if (newRoomId) {
       navigate({ to: "/room/$roomId", params: { roomId: newRoomId } });
@@ -83,9 +89,11 @@ export function EndGame() {
             />
           ))}
         </div>
-        <div className="flex justify-center mt-8">
-          <Button onClick={onStartNewGame}>New Game</Button>
-        </div>
+        {isHost && (
+          <div className="flex justify-center mt-8">
+            <Button onClick={onStartNewGame}>New Game</Button>
+          </div>
+        )}
       </div>
     </main>
   );
